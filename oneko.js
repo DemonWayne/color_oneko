@@ -1,6 +1,6 @@
 (function oneko() {
   const nekoEl = document.createElement("div");
-  const spriteSize = 24; // Новий розмір спрайту
+  const spriteSize = 26; // Новий розмір спрайту
   const scaleFactor = spriteSize / 32; // Коефіцієнт масштабування (20 / 32 = 0.625)
 
   let nekoPosX = 32;
@@ -200,7 +200,7 @@
     const diffY = nekoPosY - mousePosY;
     const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
 
-    if (distance < nekoSpeed || distance < 48) {
+    if (distance < nekoSpeed || distance < 56) {
       idle();
       return;
     }
