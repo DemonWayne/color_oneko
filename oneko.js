@@ -1,6 +1,6 @@
 (function oneko() {
   const nekoEl = document.createElement("div");
-  const spriteSize = 20; // Новий розмір спрайту
+  const spriteSize = 24; // Новий розмір спрайту
   const scaleFactor = spriteSize / 32; // Коефіцієнт масштабування (20 / 32 = 0.625)
 
   let nekoPosX = 32;
