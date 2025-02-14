@@ -1,6 +1,7 @@
 (function oneko() {
   const nekoEl = document.createElement("div");
   const spriteSize = 20; // Новий розмір спрайту
+  const scaleFactor = spriteSize / 32; // Коефіцієнт масштабування (20 / 32 = 0.625)
 
   let nekoPosX = 32;
   let nekoPosY = 32;
@@ -88,15 +89,19 @@
   function init() {
     nekoEl.id = "oneko";
     nekoEl.ariaHidden = true;
-    nekoEl.style.width = `${spriteSize}px`;
-    nekoEl.style.height = `${spriteSize}px`;
+    nekoEl.style.width = "32px"; // Оригінальний розмір спрайту
+    nekoEl.style.height = "32px"; // Оригінальний розмір спрайту
     nekoEl.style.position = "fixed";
     nekoEl.style.pointerEvents = "none";
     nekoEl.style.backgroundImage = "url('./oneko.gif')";
     nekoEl.style.imageRendering = "pixelated";
-    nekoEl.style.left = `${nekoPosX - spriteSize / 2}px`;
-    nekoEl.style.top = `${nekoPosY - spriteSize / 2}px`;
-    nekoEl.style.zIndex = 2147483647;
+    nekoEl.style.left = `${nekoPosX - 16}px`;
+    nekoEl.style.top = `${nekoPosY - 16}px`;
+    nekoEl.style.zIndex = Number.MAX_VALUE;
+
+    // Масштабування через CSS
+    nekoEl.style.transform = `scale(${scaleFactor})`;
+    nekoEl.style.transformOrigin = "top left"; // Важливо для коректного позиціювання
 
     document.body.appendChild(nekoEl);
 
@@ -126,9 +131,7 @@
 
   function setSprite(name, frame) {
     const sprite = spriteSets[name][frame % spriteSets[name].length];
-    nekoEl.style.backgroundPosition = `${sprite[0] * spriteSize}px ${
-      sprite[1] * spriteSize
-    }px`;
+    nekoEl.style.backgroundPosition = `${sprite[0] * 32}px ${sprite[1] * 32}px`;
   }
 
   function resetIdleAnimation() {
@@ -145,16 +148,16 @@
       idleAnimation == null
     ) {
       let avalibleIdleAnimations = ["sleeping", "scratchSelf"];
-      if (nekoPosX < spriteSize) {
+      if (nekoPosX < 32) {
         avalibleIdleAnimations.push("scratchWallW");
       }
-      if (nekoPosY < spriteSize) {
+      if (nekoPosY < 32) {
         avalibleIdleAnimations.push("scratchWallN");
       }
-      if (nekoPosX > window.innerWidth - spriteSize) {
+      if (nekoPosX > window.innerWidth - 32) {
         avalibleIdleAnimations.push("scratchWallE");
       }
-      if (nekoPosY > window.innerHeight - spriteSize) {
+      if (nekoPosY > window.innerHeight - 32) {
         avalibleIdleAnimations.push("scratchWallS");
       }
       idleAnimation =
@@ -222,17 +225,11 @@
     nekoPosX -= (diffX / distance) * nekoSpeed;
     nekoPosY -= (diffY / distance) * nekoSpeed;
 
-    nekoPosX = Math.min(
-      Math.max(spriteSize / 2, nekoPosX),
-      window.innerWidth - spriteSize / 2
-    );
-    nekoPosY = Math.min(
-      Math.max(spriteSize / 2, nekoPosY),
-      window.innerHeight - spriteSize / 2
-    );
+    nekoPosX = Math.min(Math.max(16, nekoPosX), window.innerWidth - 16);
+    nekoPosY = Math.min(Math.max(16, nekoPosY), window.innerHeight - 16);
 
-    nekoEl.style.left = `${nekoPosX - spriteSize / 2}px`;
-    nekoEl.style.top = `${nekoPosY - spriteSize / 2}px`;
+    nekoEl.style.left = `${nekoPosX - 16}px`;
+    nekoEl.style.top = `${nekoPosY - 16}px`;
   }
 
   init();
