@@ -1,22 +1,20 @@
-// oneko.js: https://github.com/adryd325/oneko.js
-
 (function oneko() {
-  const spriteSize = 32;
-  const scaleFactor = 0.5;
-
-  const isReducedMotion =
-    window.matchMedia(`(prefers-reduced-motion: reduce)`) === true ||
-    window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
-
-  if (isReducedMotion) return;
-
   const nekoEl = document.createElement("div");
+  const spriteSize = 20; // Новий розмір спрайту
 
   let nekoPosX = 32;
   let nekoPosY = 32;
 
   let mousePosX = 0;
   let mousePosY = 0;
+
+  const isReducedMotion =
+    window.matchMedia(`(prefers-reduced-motion: reduce)`) === true ||
+    window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+
+  if (isReducedMotion) {
+    return;
+  }
 
   let frameCount = 0;
   let idleTime = 0;
@@ -90,25 +88,15 @@
   function init() {
     nekoEl.id = "oneko";
     nekoEl.ariaHidden = true;
-    nekoEl.style.width = `${spriteSize * scaleFactor}px`;
-    nekoEl.style.height = `${spriteSize * scaleFactor}px`;
+    nekoEl.style.width = `${spriteSize}px`;
+    nekoEl.style.height = `${spriteSize}px`;
     nekoEl.style.position = "fixed";
     nekoEl.style.pointerEvents = "none";
+    nekoEl.style.backgroundImage = "url('./oneko.gif')";
     nekoEl.style.imageRendering = "pixelated";
-
-    nekoEl.style.backgroundSize = `${spriteSize * scaleFactor}px ${spriteSize * scaleFactor}px`;
-
-    const halfSize = (spriteSize * scaleFactor) / 2;
-    nekoEl.style.left = `${nekoPosX - halfSize}px`;
-    nekoEl.style.top = `${nekoPosY - halfSize}px`;
+    nekoEl.style.left = `${nekoPosX - spriteSize / 2}px`;
+    nekoEl.style.top = `${nekoPosY - spriteSize / 2}px`;
     nekoEl.style.zIndex = 2147483647;
-
-    let nekoFile = "./oneko.gif"
-    const curScript = document.currentScript;
-    if (curScript && curScript.dataset.cat) {
-      nekoFile = curScript.dataset.cat;
-    }
-    nekoEl.style.backgroundImage = `url(${nekoFile})`;
 
     document.body.appendChild(nekoEl);
 
@@ -123,7 +111,6 @@
   let lastFrameTimestamp;
 
   function onAnimationFrame(timestamp) {
-    // Stops execution if the neko element is removed from DOM
     if (!nekoEl.isConnected) {
       return;
     }
@@ -131,16 +118,17 @@
       lastFrameTimestamp = timestamp;
     }
     if (timestamp - lastFrameTimestamp > 100) {
-      lastFrameTimestamp = timestamp
-      frame()
+      lastFrameTimestamp = timestamp;
+      frame();
     }
     window.requestAnimationFrame(onAnimationFrame);
   }
 
   function setSprite(name, frame) {
     const sprite = spriteSets[name][frame % spriteSets[name].length];
-    nekoEl.style.backgroundPosition = 
-      `${sprite[0] * spriteSize * scaleFactor}px ${sprite[1] * spriteSize * scaleFactor}px`;
+    nekoEl.style.backgroundPosition = `${sprite[0] * spriteSize}px ${
+      sprite[1] * spriteSize
+    }px`;
   }
 
   function resetIdleAnimation() {
@@ -151,23 +139,22 @@
   function idle() {
     idleTime += 1;
 
-    // every ~ 20 seconds
     if (
       idleTime > 10 &&
       Math.floor(Math.random() * 200) == 0 &&
       idleAnimation == null
     ) {
       let avalibleIdleAnimations = ["sleeping", "scratchSelf"];
-      if (nekoPosX < 32) {
+      if (nekoPosX < spriteSize) {
         avalibleIdleAnimations.push("scratchWallW");
       }
-      if (nekoPosY < 32) {
+      if (nekoPosY < spriteSize) {
         avalibleIdleAnimations.push("scratchWallN");
       }
-      if (nekoPosX > window.innerWidth - 32) {
+      if (nekoPosX > window.innerWidth - spriteSize) {
         avalibleIdleAnimations.push("scratchWallE");
       }
-      if (nekoPosY > window.innerHeight - 32) {
+      if (nekoPosY > window.innerHeight - spriteSize) {
         avalibleIdleAnimations.push("scratchWallS");
       }
       idleAnimation =
@@ -220,7 +207,6 @@
 
     if (idleTime > 1) {
       setSprite("alert", 0);
-      // count down after being alerted before moving
       idleTime = Math.min(idleTime, 7);
       idleTime -= 1;
       return;
@@ -236,13 +222,17 @@
     nekoPosX -= (diffX / distance) * nekoSpeed;
     nekoPosY -= (diffY / distance) * nekoSpeed;
 
-    const halfSize = (spriteSize * scaleFactor) / 2;
-    nekoPosX = Math.min(Math.max(halfSize, nekoPosX), window.innerWidth - halfSize);
-    nekoPosY = Math.min(Math.max(halfSize, nekoPosY), window.innerHeight - halfSize);
+    nekoPosX = Math.min(
+      Math.max(spriteSize / 2, nekoPosX),
+      window.innerWidth - spriteSize / 2
+    );
+    nekoPosY = Math.min(
+      Math.max(spriteSize / 2, nekoPosY),
+      window.innerHeight - spriteSize / 2
+    );
 
-    // Коригуємо позицію елемента
-    nekoEl.style.left = `${nekoPosX - halfSize}px`;
-    nekoEl.style.top = `${nekoPosY - halfSize}px`;
+    nekoEl.style.left = `${nekoPosX - spriteSize / 2}px`;
+    nekoEl.style.top = `${nekoPosY - spriteSize / 2}px`;
   }
 
   init();
